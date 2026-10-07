@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext.tsx';
 import { Sparkles, CheckCircle2, AlertCircle, RefreshCw, Mail, ArrowRight } from 'lucide-react';
 
 export const VerifyEmailView: React.FC = () => {
-  const { verifyEmail, resendVerification, navigate } = useAuth();
+  const { user, onboardingCompleted, verifyEmail, resendVerification, navigate } = useAuth();
 
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -98,7 +98,13 @@ export const VerifyEmailView: React.FC = () => {
               Hello! Welcome to MANAV. Your email address has been verified successfully. You can now access your portal.
             </p>
             <button
-              onClick={() => navigate('student_dashboard')}
+              onClick={() => {
+                if (user?.role === 'student') {
+                  navigate(onboardingCompleted ? 'student_dashboard' : 'student_onboarding');
+                } else {
+                  navigate('teacher_dashboard');
+                }
+              }}
               className="w-full py-3 rounded-xl bg-[#0c2340] hover:bg-[#14325a] text-white font-bold text-sm shadow-md transition flex items-center justify-center space-x-2"
             >
               <span>Continue to Portal Dashboard</span>

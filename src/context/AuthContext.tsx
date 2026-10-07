@@ -168,6 +168,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (studentId !== undefined) {
       setSelectedStudentId(studentId);
     }
+    
+    // Dynamically clear address bar query and trigger popstate to unmount verify/reset views
+    if (window.location.pathname !== '/' || window.location.search) {
+      window.history.pushState({}, '', '/');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }
+    
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

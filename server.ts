@@ -1254,7 +1254,7 @@ app.get('/api/student/streak', requireAuth, async (req: AuthenticatedRequest, re
 // ==========================================
 
 // Send Reward (Supports file upload or text/link)
-app.post('/api/teacher/rewards', requireAuth, upload.single('rewardFile'), async (req: AuthenticatedRequest, res: Response) => {
+app.post('/api/teacher/rewards', requireAuth as any, upload.single('rewardFile') as any, async (req: AuthenticatedRequest, res: Response) => {
   const user = req.user!;
   if (user.role !== 'teacher') {
     res.status(403).json({ error: 'Teacher access only.' });
@@ -1370,7 +1370,7 @@ app.get('/api/storage/my-storage', requireAuth, async (req: AuthenticatedRequest
 });
 
 // Teacher & User Upload to Storage Area
-app.post('/api/storage/upload', requireAuth, upload.single('file'), async (req: AuthenticatedRequest, res: Response) => {
+app.post('/api/storage/upload', requireAuth as any, upload.single('file') as any, async (req: AuthenticatedRequest, res: Response) => {
   const user = req.user!;
   if (!req.file) {
     res.status(400).json({ error: 'Please select a file to upload from your system.' });
