@@ -107,3 +107,23 @@
 .animate-ticker-loop:hover {
   animation-play-state: paused;
 }
+
+/* Box-contained Marquee left-to-right */
+@keyframes marqueeBoxLtr {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-marquee-box-ltr {
+  animation: marqueeBoxLtr 16s linear infinite;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.animate-marquee-box-ltr:hover {
+  animation-play-state: paused;
+}

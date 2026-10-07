@@ -454,15 +454,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenAuth }) => {
       <section className="py-12 px-4 sm:px-8 bg-slate-50 border-t border-slate-200">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Card: Core Quote & Stats */}
-          <div className="lg:col-span-7 bg-[#edf4fd] border border-blue-200/80 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xs">
+          <div className="lg:col-span-7 bg-[#edf4fd] border border-blue-200/80 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xs overflow-hidden">
             {/* Quote */}
-            <div>
-              <p className="text-lg sm:text-xl font-serif italic text-slate-900 leading-snug font-semibold">
-                “Marks show what a student knows.
-                <br />
-                MANAV helps a student see who they are becoming.”
-              </p>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">
+            <div className="flex-1 flex flex-col justify-center items-center py-4 w-full">
+              <div className="w-full overflow-hidden relative bg-transparent py-4 px-1">
+                <div className="animate-marquee-box-ltr whitespace-nowrap inline-block text-2xl sm:text-3xl font-serif italic text-amber-600 font-extrabold drop-shadow-xs">
+                  “Marks show what a student knows. MANAV helps a student see who they are becoming.”
+                </div>
+              </div>
+              <p className="text-xs font-black text-slate-500 uppercase tracking-widest mt-4">
                 — DTU | MANAV —
               </p>
             </div>

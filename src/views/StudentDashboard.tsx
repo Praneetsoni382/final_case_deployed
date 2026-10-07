@@ -101,9 +101,9 @@ export const StudentDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Welcome & Pairing Code Header */}
-      <div className="p-6 sm:p-7 rounded-2xl bg-gradient-to-r from-[#0c2340] via-[#14325a] to-slate-900 text-white shadow-md relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="relative z-10 max-w-xl">
+      {/* Welcome Header (Clean, 100% full width, no overlapping boxes on right) */}
+      <div className="p-6 sm:p-7 rounded-2xl bg-gradient-to-r from-[#0c2340] via-[#14325a] to-slate-900 text-white shadow-md relative overflow-hidden">
+        <div className="relative z-10 w-full">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 text-amber-300 text-xs font-semibold mb-2.5 border border-white/15">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Active Development Cycle</span>
@@ -111,87 +111,111 @@ export const StudentDashboard: React.FC = () => {
           <h1 className="text-2xl sm:text-3xl font-extrabold font-serif">
             Welcome, {user?.fullName || 'Student'} 👋
           </h1>
-          <p className="text-xs sm:text-sm text-slate-200 mt-1.5 leading-relaxed font-light">
-            «Marks show what a student knows. MANAV helps a student see who they are becoming.»
-          </p>
+          <div className="w-full overflow-hidden relative bg-transparent py-2 px-1 mt-3.5">
+            <div className="animate-marquee-box-ltr whitespace-nowrap inline-block text-base sm:text-lg font-serif italic text-amber-300 font-bold">
+              “Marks show what a student knows. MANAV helps a student see who they are becoming.”
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* TODAY'S DEVELOPMENT CHALLENGE & CONNECTION SIDE-BY-SIDE */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Left: Today's Challenge (2/3 width) */}
+        <div className="lg:col-span-2 p-5 sm:p-6 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start space-x-3.5">
+            <div className="w-11 h-11 rounded-xl bg-[#0c2340] text-white flex items-center justify-center shrink-0 shadow-xs">
+              <Target className="w-5 h-5 text-amber-300" />
+            </div>
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+                Today's Challenge
+              </span>
+              <h3 className="text-base font-bold text-slate-900 mt-0.5">
+                {isTestCompleted
+                  ? reflectionSubmitted
+                    ? 'Daily Scenarios Completed • Review Your Growth Report'
+                    : 'Scenarios Completed • Mandatory Reflection Pending'
+                  : '10-Scenario Vivekananda Challenges Ready'}
+              </h3>
+              <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                {isTestCompleted
+                  ? reflectionSubmitted
+                    ? 'Your decisions and reflection have contributed fresh observable evidence to your Vivekananda growth profile.'
+                    : 'Review your growth report and synthesize today’s realizations in your daily reflection.'
+                  : 'Engage with 10 realistic situational dilemmas to practice self-reliance, fearlessness, initiative, and critical thinking.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="shrink-0 w-full sm:w-auto">
+            {!isTestCompleted ? (
+              <button
+                onClick={() => navigate('student_test')}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#0c2340] hover:bg-[#14325a] text-white font-bold text-xs shadow-sm transition flex items-center justify-center space-x-2"
+              >
+                <span>Begin Today’s Scenarios</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            ) : !reflectionSubmitted ? (
+              <button
+                onClick={() => navigate('reflection')}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition flex items-center justify-center space-x-2"
+              >
+                <span>Write Today’s Reflection</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate('reflection_journal')}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition flex items-center justify-center space-x-2"
+              >
+                <span>View Journal Entry</span>
+                <BookOpen className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Student Pairing Code Box */}
-        <div className="relative z-10 bg-white/10 backdrop-blur-md border border-white/20 p-3.5 rounded-xl shrink-0 w-full md:w-auto">
-          <span className="text-[10px] font-semibold tracking-wider uppercase text-slate-300 block mb-1">
-            Teacher Pairing Code
-          </span>
-          <div className="flex items-center space-x-2">
-            <span className="font-mono text-lg font-extrabold text-white tracking-wider">
+        {/* Right: Teacher Pairing Code Card (1/3 width) */}
+        <div className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-[#edf4fd] flex flex-col justify-between gap-4">
+          <div className="flex items-start space-x-3.5">
+            <div className="w-10 h-10 rounded-xl bg-[#0c2340] text-white flex items-center justify-center shrink-0 shadow-sm">
+              <Shield className="w-5 h-5 text-amber-300" />
+            </div>
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+                Teacher Connection
+              </span>
+              <h3 className="text-sm font-bold text-[#0c2340] mt-0.5">My Pairing Code</h3>
+              <p className="text-[10px] text-slate-600 mt-0.5 leading-tight">
+                Share this code with your teacher to link your profile.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between bg-white border border-blue-100 rounded-xl p-2.5 shadow-2xs">
+            <span className="font-mono text-base font-extrabold text-slate-900 tracking-wider">
               {user?.pairingCode || 'MM-0000'}
             </span>
             <button
               onClick={copyPairingCode}
-              className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white transition"
-              title="Copy pairing code"
+              className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-900 transition flex items-center space-x-1"
+              title="Copy code"
             >
-              {copiedCode ? <Check className="w-4 h-4 text-amber-300" /> : <Copy className="w-4 h-4" />}
+              {copiedCode ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-[10px] font-bold text-emerald-600">Copied</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-bold">Copy</span>
+                </>
+              )}
             </button>
           </div>
-          <span className="text-[10px] text-slate-300/80 block mt-0.5">
-            Share with your teacher to link accounts
-          </span>
-        </div>
-      </div>
-
-      {/* TODAY'S DEVELOPMENT CHALLENGE BANNER */}
-      <div className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-start space-x-3.5">
-          <div className="w-11 h-11 rounded-xl bg-[#0c2340] text-white flex items-center justify-center shrink-0 shadow-xs">
-            <Target className="w-5 h-5 text-amber-300" />
-          </div>
-          <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
-              Today's Challenge
-            </span>
-            <h3 className="text-base font-bold text-slate-900 mt-0.5">
-              {isTestCompleted
-                ? reflectionSubmitted
-                  ? 'Daily Scenarios Completed • Review Your Growth Report'
-                  : 'Scenarios Completed • Mandatory Reflection Pending'
-                : '10-Scenario Vivekananda Challenges Ready'}
-            </h3>
-            <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
-              {isTestCompleted
-                ? reflectionSubmitted
-                  ? 'Your decisions and reflection have contributed fresh observable evidence to your Vivekananda growth profile.'
-                  : 'Review your growth report and synthesize today’s realizations in your daily reflection.'
-                : 'Engage with 10 realistic situational dilemmas to practice self-reliance, fearlessness, initiative, and critical thinking.'}
-            </p>
-          </div>
-        </div>
-
-        <div className="shrink-0 w-full sm:w-auto">
-          {!isTestCompleted ? (
-            <button
-              onClick={() => navigate('student_test')}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#0c2340] hover:bg-[#14325a] text-white font-bold text-xs shadow-sm transition flex items-center justify-center space-x-2"
-            >
-              <span>Begin Today’s Scenarios</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          ) : !reflectionSubmitted ? (
-            <button
-              onClick={() => navigate('reflection')}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition flex items-center justify-center space-x-2"
-            >
-              <span>Write Today’s Reflection</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          ) : (
-            <button
-              onClick={() => navigate('reflection_journal')}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition flex items-center justify-center space-x-2"
-            >
-              <span>View Journal Entry</span>
-              <BookOpen className="w-4 h-4" />
-            </button>
-          )}
         </div>
       </div>
 

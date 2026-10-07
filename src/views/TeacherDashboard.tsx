@@ -113,6 +113,11 @@ export const TeacherDashboard: React.FC = () => {
           <p className="text-sm text-slate-200 mt-2 max-w-xl">
             Observe student progress, read reflections, encourage milestones, and award real resources to nurture human potential.
           </p>
+          <div className="w-full overflow-hidden relative bg-transparent py-2 px-1 mt-3.5">
+            <div className="animate-marquee-box-ltr whitespace-nowrap inline-block text-base sm:text-lg font-serif italic text-amber-300 font-bold">
+              “Marks show what a student knows. MANAV helps a student see who they are becoming.”
+            </div>
+          </div>
         </div>
 
         {/* Pair Student Button */}

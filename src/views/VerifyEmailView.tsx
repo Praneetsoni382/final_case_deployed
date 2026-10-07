@@ -24,6 +24,12 @@ export const VerifyEmailView: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (token) {
+      handleVerify();
+    }
+  }, [token]);
+
   const handleVerify = async () => {
     if (!token) return;
     try {
@@ -31,6 +37,15 @@ export const VerifyEmailView: React.FC = () => {
       setError(null);
       const res = await verifyEmail(token);
       setSuccess(res.message || 'Email verified successfully. You can now continue to your dashboard.');
+      
+      // Automatically redirect after 2.5 seconds
+      setTimeout(() => {
+        if (res.user.role === 'student') {
+          navigate(res.onboardingCompleted ? 'student_dashboard' : 'student_onboarding');
+        } else {
+          navigate('teacher_dashboard');
+        }
+      }, 2500);
     } catch (err: any) {
       setError(err.message || 'This verification link is invalid or has expired. Please request a new verification email.');
     } finally {
