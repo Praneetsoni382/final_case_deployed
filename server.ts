@@ -173,18 +173,20 @@ app.post('/api/auth/register', async (req: Request, res: Response) => {
     const appOrigin = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
     const verificationLink = `${appOrigin}/verify-email?token=${verificationToken}`;
 
-    // Dispatch email via Brevo API
-    const emailSent = await sendVerificationEmail({
+    // Dispatch email via Brevo API in background (non-blocking) to prevent 502 / timeouts on Render
+    sendVerificationEmail({
       toEmail: cleanEmail,
       fullName: fullName.trim(),
       verificationLink,
+    }).catch(err => {
+      console.error('[BACKGROUND EMAIL ERROR] Failed to send verification email:', err);
     });
 
     res.status(201).json({
       message: 'Account created. We’ve sent a verification link to your email address. Please verify your email before logging in.',
       email: cleanEmail,
       role,
-      verificationLinkPreview: emailSent ? undefined : verificationLink, // Backup preview if email sandbox restricts delivery
+      verificationLinkPreview: verificationLink, // Always provide verification link backup so users can verify instantly on the UI
     });
   } catch (err: any) {
     console.error('Registration error:', err);
@@ -364,10 +366,13 @@ app.post('/api/auth/resend-verification', async (req: Request, res: Response) =>
     const appOrigin = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
     const verificationLink = `${appOrigin}/verify-email?token=${newVerificationToken}`;
 
-    await sendVerificationEmail({
+    // Dispatch email via Brevo API in background (non-blocking) to prevent 502 / timeouts on Render
+    sendVerificationEmail({
       toEmail: cleanEmail,
       fullName: user.fullName,
       verificationLink,
+    }).catch(err => {
+      console.error('[BACKGROUND EMAIL ERROR] Failed to resend verification email:', err);
     });
 
     res.json({
@@ -490,10 +495,13 @@ app.post('/api/auth/forgot-password', async (req: Request, res: Response) => {
     const appOrigin = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
     const resetLink = `${appOrigin}/reset-password?token=${resetToken}`;
 
-    await sendPasswordResetEmail({
+    // Dispatch password reset email in background (non-blocking) to prevent 502 / timeouts on Render
+    sendPasswordResetEmail({
       toEmail: cleanEmail,
       fullName: user.fullName,
       resetLink,
+    }).catch(err => {
+      console.error('[BACKGROUND EMAIL ERROR] Failed to send password reset email:', err);
     });
 
     res.json({
