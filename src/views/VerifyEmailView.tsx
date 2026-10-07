@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext.tsx';
 import { Sparkles, CheckCircle2, AlertCircle, RefreshCw, Mail, ArrowRight } from 'lucide-react';
 
@@ -16,6 +16,8 @@ export const VerifyEmailView: React.FC = () => {
   const [resendMessage, setResendMessage] = useState<string | null>(null);
   const [resendLoading, setResendLoading] = useState(false);
 
+  const verificationInitiated = useRef(false);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlToken = params.get('token');
@@ -25,7 +27,8 @@ export const VerifyEmailView: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (token) {
+    if (token && !verificationInitiated.current) {
+      verificationInitiated.current = true;
       handleVerify();
     }
   }, [token]);
