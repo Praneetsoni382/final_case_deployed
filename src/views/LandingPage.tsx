@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext.tsx';
+import dtuLogo from '../assets/images/dtu_official_logo_match_1791324125893.jpg';
+import swamiVivekanandaImg from '../assets/images/swami_vivekananda_1791312815482.jpg';
 import {
   Sparkles,
   ArrowRight,
@@ -63,7 +65,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenAuth }) => {
           <div className="flex items-center space-x-2">
             <div className="w-5 h-5 rounded-full overflow-hidden shrink-0 border border-amber-300/60 bg-white shadow-2xs">
               <img
-                src="/src/assets/images/dtu_official_logo_match_1791324125893.jpg"
+                src={dtuLogo}
                 alt="Delhi Technological University (DTU) Official Logo"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"
@@ -166,7 +168,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenAuth }) => {
             {/* DTU Circular Crest */}
             <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full border-2 border-[#800000] bg-white shadow-md flex items-center justify-center p-0.5 shrink-0 overflow-hidden ring-2 ring-red-100">
               <img
-                src="/src/assets/images/dtu_official_logo_match_1791324125893.jpg"
+                src={dtuLogo}
                 alt="Delhi Technological University (DTU) Official Seal"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-contain rounded-full"
@@ -215,7 +217,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenAuth }) => {
           <div className="inline-flex items-center space-x-3.5 bg-white/90 backdrop-blur-md px-5 py-2 rounded-2xl border border-amber-300/80 shadow-xs shrink-0">
             <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-amber-600/80 shadow-xs shrink-0 bg-amber-100 ring-2 ring-amber-200">
               <img
-                src="/src/assets/images/swami_vivekananda_1791312815482.jpg"
+                src={swamiVivekanandaImg}
                 alt="Swami Vivekananda"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover object-top"
@@ -235,7 +237,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenAuth }) => {
           <div className="inline-flex items-center space-x-3.5 bg-white/90 backdrop-blur-md px-5 py-2 rounded-2xl border border-amber-300/80 shadow-xs shrink-0">
             <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-amber-600/80 shadow-xs shrink-0 bg-amber-100 ring-2 ring-amber-200">
               <img
-                src="/src/assets/images/swami_vivekananda_1791312815482.jpg"
+                src={swamiVivekanandaImg}
                 alt="Swami Vivekananda"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover object-top"
@@ -255,7 +257,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenAuth }) => {
           <div className="inline-flex items-center space-x-3.5 bg-white/90 backdrop-blur-md px-5 py-2 rounded-2xl border border-amber-300/80 shadow-xs shrink-0">
             <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-amber-600/80 shadow-xs shrink-0 bg-amber-100 ring-2 ring-amber-200">
               <img
-                src="/src/assets/images/swami_vivekananda_1791312815482.jpg"
+                src={swamiVivekanandaImg}
                 alt="Swami Vivekananda"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover object-top"
@@ -729,7 +731,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenAuth }) => {
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 rounded-full overflow-hidden border border-[#800000] p-0.5 bg-white shrink-0 shadow-xs ring-1 ring-red-100">
                   <img
-                    src="/src/assets/images/dtu_official_logo_match_1791324125893.jpg"
+                    src={dtuLogo}
                     alt="Delhi Technological University Official Seal"
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-contain rounded-full"
@@ -757,7 +759,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenAuth }) => {
               <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-center space-x-3.5 text-xs text-amber-950">
                 <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-amber-600/80 shrink-0 bg-amber-100 shadow-xs">
                   <img
-                    src="/src/assets/images/swami_vivekananda_1791312815482.jpg"
+                    src={swamiVivekanandaImg}
                     alt="Swami Vivekananda"
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover object-top"

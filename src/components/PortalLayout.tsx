@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.tsx';
+import dtuLogo from '../assets/images/dtu_official_logo_match_1791324125893.jpg';
+import swamiVivekanandaImg from '../assets/images/swami_vivekananda_1791312815482.jpg';
 import {
   LayoutDashboard,
   Target,
@@ -141,7 +143,7 @@ export const PortalLayout: React.FC<PortalLayoutProps> = ({
           <div className="flex items-center space-x-2">
             <div className="w-5 h-5 rounded-full overflow-hidden shrink-0 border border-amber-300/60 bg-white shadow-2xs">
               <img
-                src="/src/assets/images/dtu_official_logo_match_1791324125893.jpg"
+                src={dtuLogo}
                 alt="Delhi Technological University (DTU) Official Logo"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"
@@ -181,7 +183,7 @@ export const PortalLayout: React.FC<PortalLayoutProps> = ({
           >
             <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-full border-2 border-[#800000] bg-white shadow-xs flex items-center justify-center p-0.5 shrink-0 overflow-hidden ring-2 ring-red-100">
               <img
-                src="/src/assets/images/dtu_official_logo_match_1791324125893.jpg"
+                src={dtuLogo}
                 alt="Delhi Technological University Official Seal"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-contain rounded-full"
@@ -206,7 +208,7 @@ export const PortalLayout: React.FC<PortalLayoutProps> = ({
             <div className="hidden lg:flex items-center space-x-2.5 bg-gradient-to-r from-amber-50 to-orange-50/60 py-1.5 px-3 rounded-xl border border-amber-200/70 shadow-xs max-w-xs">
               <div className="w-10 h-10 rounded-full overflow-hidden border border-amber-600/80 shrink-0 bg-amber-100">
                 <img
-                  src="/src/assets/images/swami_vivekananda_1791312815482.jpg"
+                  src={swamiVivekanandaImg}
                   alt="Swami Vivekananda"
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover object-top"
