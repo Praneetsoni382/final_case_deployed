@@ -67,15 +67,50 @@ function cleanData<T>(obj: T): T {
   return obj;
 }
 
+// In-memory local cache database to eliminate redundant Firestore queries and accelerate responses
+const serverCache = new Map<string, { data: any; expiresAt: number }>();
+
+function getFromCache<T>(key: string): T | null {
+  const item = serverCache.get(key);
+  if (!item) return null;
+  if (Date.now() > item.expiresAt) {
+    serverCache.delete(key);
+    return null;
+  }
+  return item.data as T;
+}
+
+function setInCache<T>(key: string, data: T, ttlMs: number = 60 * 1000): void {
+  serverCache.set(key, { data, expiresAt: Date.now() + ttlMs });
+}
+
+export function invalidateServerCache(prefix?: string): void {
+  if (!prefix) {
+    serverCache.clear();
+    return;
+  }
+  for (const k of serverCache.keys()) {
+    if (k.startsWith(prefix)) {
+      serverCache.delete(k);
+    }
+  }
+}
+
 export const firestoreProvider = {
   // 1. Users Collection (/users)
   users: {
     async findById(id: string): Promise<DbUser | null> {
+      const cacheKey = `user_id_${id}`;
+      const cached = getFromCache<DbUser>(cacheKey);
+      if (cached) return cached;
+
       try {
         const docRef = doc(firestore, 'users', id);
         const snapshot = await getDoc(docRef);
         if (!snapshot.exists()) return null;
-        return snapshot.data() as DbUser;
+        const user = snapshot.data() as DbUser;
+        setInCache(cacheKey, user, 60 * 1000); // 60s cache
+        return user;
       } catch (err) {
         console.error(`Error fetching user ${id} from Firestore:`, err);
         return null;
@@ -83,8 +118,12 @@ export const firestoreProvider = {
     },
 
     async findByEmail(email: string): Promise<DbUser | null> {
+      const cleanEmail = email.toLowerCase().trim();
+      const cacheKey = `user_email_${cleanEmail}`;
+      const cached = getFromCache<DbUser>(cacheKey);
+      if (cached) return cached;
+
       try {
-        const cleanEmail = email.toLowerCase().trim();
         const q = query(
           collection(firestore, 'users'),
           where('email', '==', cleanEmail),
@@ -92,7 +131,9 @@ export const firestoreProvider = {
         );
         const snapshot = await getDocs(q);
         if (snapshot.empty) return null;
-        return snapshot.docs[0].data() as DbUser;
+        const user = snapshot.docs[0].data() as DbUser;
+        setInCache(cacheKey, user, 60 * 1000); // 60s cache
+        return user;
       } catch (err) {
         console.error(`Error querying user by email ${email}:`, err);
         return null;
@@ -196,7 +237,10 @@ export const firestoreProvider = {
         );
       }
 
-      return payload;
+        invalidateServerCache('user_');
+        invalidateServerCache('students_');
+        invalidateServerCache('teachers_');
+        return payload;
     },
 
     async update(id: string, updates: Partial<DbUser>): Promise<DbUser | null> {
@@ -205,6 +249,11 @@ export const firestoreProvider = {
         const now = new Date().toISOString();
         const cleanUpdates = cleanData({ ...updates, updatedAt: now });
         await updateDoc(docRef, cleanUpdates);
+
+        invalidateServerCache(`user_id_${id}`);
+        invalidateServerCache('user_email_');
+        invalidateServerCache('students_');
+        invalidateServerCache('teachers_');
 
         const updated = await this.findById(id);
         return updated;
@@ -299,11 +348,17 @@ export const firestoreProvider = {
   // 2. Student Profiles (/students)
   profiles: {
     async getByUserId(userId: string): Promise<StudentProfile | null> {
+      const cacheKey = `profile_${userId}`;
+      const cached = getFromCache<StudentProfile>(cacheKey);
+      if (cached) return cached;
+
       try {
         const docRef = doc(firestore, 'studentProfiles', userId);
         const snapshot = await getDoc(docRef);
         if (!snapshot.exists()) return null;
-        return snapshot.data() as StudentProfile;
+        const profile = snapshot.data() as StudentProfile;
+        setInCache(cacheKey, profile, 60 * 1000);
+        return profile;
       } catch (err) {
         console.error(`Error getting student profile for ${userId}:`, err);
         return null;
@@ -318,6 +373,7 @@ export const firestoreProvider = {
         updatedAt: now,
       });
       await setDoc(docRef, payload, { merge: true });
+      invalidateServerCache(`profile_${profile.userId}`);
       return payload;
     },
   },
@@ -325,6 +381,10 @@ export const firestoreProvider = {
   // 3. Challenges Collection (/challenges)
   challenges: {
     async listActive(): Promise<Challenge[]> {
+      const cacheKey = 'challenges_active';
+      const cached = getFromCache<Challenge[]>(cacheKey);
+      if (cached) return cached;
+
       try {
         const q = query(
           collection(firestore, 'challenges'),
@@ -333,6 +393,7 @@ export const firestoreProvider = {
         const snapshot = await getDocs(q);
         const list: Challenge[] = [];
         snapshot.forEach(d => list.push(d.data() as Challenge));
+        setInCache(cacheKey, list, 120 * 1000);
         return list;
       } catch (err) {
         console.error('Error listing challenges:', err);

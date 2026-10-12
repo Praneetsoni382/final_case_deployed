@@ -14,6 +14,56 @@ import {
 } from '../types/index.ts';
 
 const TOKEN_KEY = 'manmaker_auth_token';
+const CACHE_PREFIX = 'manav_local_db_';
+
+// Client-side local indexed storage cache for zero-latency retrieval and caching
+export const localClientDb = {
+  get<T>(key: string, maxAgeMs: number = 60 * 1000): T | null {
+    try {
+      const raw = localStorage.getItem(CACHE_PREFIX + key);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (Date.now() - parsed.timestamp > maxAgeMs) {
+        localStorage.removeItem(CACHE_PREFIX + key);
+        return null;
+      }
+      return parsed.data as T;
+    } catch {
+      return null;
+    }
+  },
+
+  set<T>(key: string, data: T): void {
+    try {
+      localStorage.setItem(
+        CACHE_PREFIX + key,
+        JSON.stringify({
+          data,
+          timestamp: Date.now(),
+        })
+      );
+    } catch {
+      // quota or private mode fallback
+    }
+  },
+
+  remove(key: string): void {
+    try {
+      localStorage.removeItem(CACHE_PREFIX + key);
+    } catch {}
+  },
+
+  clearAll(): void {
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith(CACHE_PREFIX)) {
+          localStorage.removeItem(k);
+        }
+      }
+    } catch {}
+  },
+};
 
 export const api = {
   getToken(): string | null {
@@ -24,6 +74,7 @@ export const api = {
   },
   clearToken() {
     localStorage.removeItem(TOKEN_KEY);
+    localClientDb.clearAll();
   },
 
   async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -91,6 +142,7 @@ export const api = {
     if (data.token) {
       this.setToken(data.token);
     }
+    localClientDb.set('session', { user: data.user, onboardingCompleted: data.onboardingCompleted });
     return data;
   },
 
@@ -114,6 +166,7 @@ export const api = {
     if (data.token) {
       this.setToken(data.token);
     }
+    localClientDb.set('session', { user: data.user, onboardingCompleted: data.onboardingCompleted });
     return data;
   },
 
@@ -136,11 +189,19 @@ export const api = {
       await this.request<{ success: boolean }>('/api/auth/logout', { method: 'POST' });
     } finally {
       this.clearToken();
+      localClientDb.clearAll();
     }
   },
 
   async getMe() {
-    return this.request<{ user: User; onboardingCompleted: boolean }>('/api/auth/me');
+    // Check local client storage cache first for instant render
+    const cached = localClientDb.get<{ user: User; onboardingCompleted: boolean }>('session', 2 * 60 * 1000);
+    if (cached) {
+      return cached;
+    }
+    const data = await this.request<{ user: User; onboardingCompleted: boolean }>('/api/auth/me');
+    localClientDb.set('session', data);
+    return data;
   },
 
   // Student Profile

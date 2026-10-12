@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types/index.ts';
-import { api } from '../lib/api.ts';
+import { api, localClientDb } from '../lib/api.ts';
 
 interface AuthContextType {
   user: User | null;
@@ -33,9 +33,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [onboardingCompleted, setOnboardingCompleted] = useState<boolean>(true);
+  // Pre-load from local storage database cache so there is 0ms delay and zero buffering circle
+  const cached = localClientDb.get<{ user: User; onboardingCompleted: boolean }>('session', 15 * 60 * 1000);
+
+  const [user, setUser] = useState<User | null>(cached?.user || null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [onboardingCompleted, setOnboardingCompleted] = useState<boolean>(
+    cached ? cached.onboardingCompleted : true
+  );
   const [currentView, setCurrentView] = useState<string>('landing');
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [unreadMessages, setUnreadMessages] = useState<number>(0);
@@ -62,30 +67,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const refreshSession = async () => {
+    // If no token exists, stay unauthenticated
+    if (!api.getToken()) {
+      setUser(null);
+      return;
+    }
+
     try {
       const res = await api.getMe();
       setUser(res.user);
       setOnboardingCompleted(res.onboardingCompleted);
+      localClientDb.set('session', { user: res.user, onboardingCompleted: res.onboardingCompleted });
 
-      // Auto route to appropriate view if on landing or auth
-      if (currentView === 'landing' || currentView === 'auth') {
-        if (res.user.role === 'student') {
-          if (!res.onboardingCompleted) {
-            setCurrentView('student_onboarding');
-          } else {
-            setCurrentView('student_dashboard');
-          }
-        } else {
-          setCurrentView('teacher_dashboard');
-        }
-      }
-
+      // Note: We deliberately DO NOT auto-redirect away from landing page!
+      // When users visit the link, they remain on the landing page as required.
       await refreshCounts();
     } catch {
       api.clearToken();
+      localClientDb.clearAll();
       setUser(null);
-    } finally {
-      setLoading(false);
     }
   };
 

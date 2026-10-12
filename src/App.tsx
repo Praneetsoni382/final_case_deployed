@@ -46,17 +46,6 @@ function MainApp() {
     setAuthModalOpen(true);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white font-sans">
-        <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-3 border-amber-400 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs font-semibold text-slate-300">Authenticating session with MANAV security core...</p>
-        </div>
-      </div>
-    );
-  }
-
   // Handle URL Email Verification route
   if (pathname === '/verify-email' || window.location.search.includes('token=')) {
     if (window.location.search.includes('reset') || pathname === '/reset-password') {

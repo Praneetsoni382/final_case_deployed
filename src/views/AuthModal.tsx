@@ -475,22 +475,48 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </div>
 
               {verificationPreview && (
-                <div className="p-4 rounded-2xl bg-slate-100 border border-slate-300 text-left space-y-2">
-                  <div className="flex items-center justify-between text-xs font-bold text-slate-800">
-                    <span>⚡ Verification Link:</span>
+                <div className="p-5 rounded-2xl bg-amber-50/80 border-2 border-amber-300/80 text-left space-y-3.5 shadow-xs">
+                  <div className="flex items-center space-x-2 text-xs font-bold text-amber-950">
+                    <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>Verify Your Account Instantly</span>
+                  </div>
+
+                  <p className="text-xs text-slate-700 leading-relaxed">
+                    You can verify your account by clicking the <strong>Verify Email Address</strong> button below, or by clicking the direct verification link. Both options redirect directly to the verified portal page.
+                  </p>
+
+                  {/* Input 1: Primary Action Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.location.href = verificationPreview;
+                    }}
+                    className="w-full py-3 px-4 rounded-xl bg-[#0c2340] hover:bg-[#14325a] text-white font-bold text-sm shadow-md transition flex items-center justify-center space-x-2 cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-amber-300" />
+                    <span>Verify Email Address</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+
+                  {/* Input 2: Clickable Direct Link */}
+                  <div className="pt-2 border-t border-amber-200/80">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-700 mb-1">
+                      <span>Or click the direct verification link:</span>
+                      <a
+                        href={verificationPreview}
+                        className="text-blue-700 hover:text-blue-900 font-semibold underline flex items-center space-x-0.5"
+                      >
+                        <span>Click Link to Verify</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </a>
+                    </div>
                     <a
                       href={verificationPreview}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#0c2340] hover:underline flex items-center space-x-1"
+                      className="block text-[11px] font-mono text-blue-800 break-all bg-white p-2.5 rounded-xl border border-amber-200/90 hover:bg-blue-50/50 hover:border-blue-300 transition"
                     >
-                      <span>Open Link</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      {verificationPreview}
                     </a>
                   </div>
-                  <p className="text-[11px] font-mono text-slate-600 break-all bg-white p-2 rounded-lg border border-slate-200">
-                    {verificationPreview}
-                  </p>
                 </div>
               )}
 

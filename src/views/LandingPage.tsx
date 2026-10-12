@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext.tsx';
 import {
   Sparkles,
   ArrowRight,
@@ -27,6 +28,8 @@ interface LandingPageProps {
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onOpenAuth }) => {
+  const { user, onboardingCompleted, navigate, logout } = useAuth();
+
   // Accessibility & UI Controls
   const [fontSizeScale, setFontSizeScale] = useState<number>(1); // 0.9, 1, 1.1
   const [isHighContrast, setIsHighContrast] = useState<boolean>(false);
@@ -137,6 +140,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenAuth }) => {
                 English
               </button>
             </div>
+
+            {user && (
+              <div className="flex items-center space-x-2 pl-2 border-l border-slate-700 text-[11px]">
+                <span className="text-amber-300 font-semibold hidden md:inline">
+                  {user.fullName} ({user.role})
+                </span>
+                <button
+                  onClick={() => logout()}
+                  className="text-slate-300 hover:text-white underline underline-offset-2"
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -292,20 +309,46 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenAuth }) => {
             >
               About DTU
             </button>
-            <button
-              onClick={() => onOpenAuth('login')}
-              className="py-1.5 px-2.5 rounded-lg text-slate-200 hover:text-white hover:bg-white/10 transition whitespace-nowrap"
-            >
-              Sign In
-            </button>
+            {user ? (
+              <button
+                onClick={() =>
+                  navigate(
+                    user.role === 'student'
+                      ? (onboardingCompleted ? 'student_dashboard' : 'student_onboarding')
+                      : 'teacher_dashboard'
+                  )
+                }
+                className="py-1.5 px-3 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition flex items-center space-x-1"
+              >
+                <span>My Portal</span>
+                <span>→</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => onOpenAuth('login')}
+                className="py-1.5 px-2.5 rounded-lg text-slate-200 hover:text-white hover:bg-white/10 transition whitespace-nowrap"
+              >
+                Sign In
+              </button>
+            )}
           </div>
 
-          {/* Right Action: Get Started Button */}
+          {/* Right Action: Get Started / Go to Dashboard Button */}
           <button
-            onClick={() => onOpenAuth('register', 'student')}
+            onClick={() => {
+              if (user) {
+                navigate(
+                  user.role === 'student'
+                    ? (onboardingCompleted ? 'student_dashboard' : 'student_onboarding')
+                    : 'teacher_dashboard'
+                );
+              } else {
+                onOpenAuth('register', 'student');
+              }
+            }}
             className="px-4 sm:px-5 py-2 rounded-full bg-white text-[#14325a] hover:bg-slate-100 font-bold text-xs sm:text-sm shadow transition hover:scale-105 shrink-0 flex items-center space-x-1"
           >
-            <span>Get Started</span>
+            <span>{user ? 'Go to Dashboard' : 'Get Started'}</span>
             <span className="text-base leading-none">→</span>
           </button>
         </div>
@@ -340,18 +383,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenAuth }) => {
             {/* Primary Action Buttons */}
             <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
               <button
-                onClick={() => onOpenAuth('register', 'student')}
+                onClick={() => {
+                  if (user?.role === 'student') {
+                    navigate(onboardingCompleted ? 'student_dashboard' : 'student_onboarding');
+                  } else {
+                    onOpenAuth(user ? 'login' : 'register', 'student');
+                  }
+                }}
                 className="px-7 py-3.5 rounded-xl bg-[#0d47a1] hover:bg-[#0b3c8a] text-white font-bold text-sm sm:text-base shadow-md transition hover:scale-[1.02] flex items-center justify-center space-x-2"
               >
-                <span>Enter as Student</span>
+                <span>{user?.role === 'student' ? 'Continue to Student Portal' : 'Enter as Student'}</span>
                 <span>→</span>
               </button>
               <button
-                onClick={() => onOpenAuth('register', 'teacher')}
+                onClick={() => {
+                  if (user?.role === 'teacher') {
+                    navigate('teacher_dashboard');
+                  } else {
+                    onOpenAuth(user ? 'login' : 'register', 'teacher');
+                  }
+                }}
                 className="px-7 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border-2 border-slate-300 font-bold text-sm sm:text-base transition hover:scale-[1.02] flex items-center justify-center space-x-2 shadow-xs"
               >
                 <Users className="w-4 h-4 text-slate-600" />
-                <span>Enter as Teacher</span>
+                <span>{user?.role === 'teacher' ? 'Continue to Teacher Portal' : 'Enter as Teacher'}</span>
               </button>
             </div>
           </div>

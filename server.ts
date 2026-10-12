@@ -26,10 +26,21 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+
+// Helper: Resolve reliable origin URL for email verification links and previews
+function getAppOrigin(req: Request): string {
+  if (process.env.APP_URL) {
+    return process.env.APP_URL.replace(/\/$/, '');
+  }
+  const proto = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
+  const host = req.get('host') || 'localhost:3000';
+  return `${proto}://${host}`;
+}
 
 // Multer storage setup for real persistent teacher reward uploads
 const uploadDir = path.resolve(process.cwd(), 'data', 'uploads');
@@ -169,8 +180,8 @@ app.post('/api/auth/register', async (req: Request, res: Response) => {
       emailVerified: false,
     });
 
-    // Build verification link using APP_URL or request origin
-    const appOrigin = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
+    // Build verification link using reliable app origin
+    const appOrigin = getAppOrigin(req);
     const verificationLink = `${appOrigin}/verify-email?token=${verificationToken}`;
 
     // Dispatch email via Brevo API in background (non-blocking) to prevent 502 / timeouts on Render
@@ -363,7 +374,7 @@ app.post('/api/auth/resend-verification', async (req: Request, res: Response) =>
       verificationTokenExpiresAt: newExpiresAt,
     });
 
-    const appOrigin = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
+    const appOrigin = getAppOrigin(req);
     const verificationLink = `${appOrigin}/verify-email?token=${newVerificationToken}`;
 
     // Dispatch email via Brevo API in background (non-blocking) to prevent 502 / timeouts on Render
